@@ -49,9 +49,9 @@ func main() {
 			 </body>
 			 </html>`))
 	})
-	level.Info(logger).Log("msg", "Starting exporter", "address", fmt.Sprintf(":%d", *port))
+	level.Info(logger).Log("message", "Starting exporter", "address", fmt.Sprintf(":%d", *port))
 
 	if err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
-		level.Error(logger).Log("msg", "Failed to start HTTP server", "err", err)
+		level.Error(logger).Log("message", "Failed to start HTTP server", "err", err)
 	}
 }

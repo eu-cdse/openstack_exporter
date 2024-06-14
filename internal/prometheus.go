@@ -124,7 +124,7 @@ func (collector *openStackCollector) Collect(ch chan<- prometheus.Metric) {
 
 	defer func() {
 		duration := time.Since(startTime).Seconds()
-		level.Debug(logger).Log("msg", fmt.Sprintf("Metrics collection duration: %f seconds", duration))
+		level.Debug(logger).Log("message", fmt.Sprintf("Metrics collection duration: %f seconds", duration))
 		ch <- prometheus.MustNewConstMetric(collector.collectDuration, prometheus.GaugeValue, duration)
 	}()
 	providerClient, err := authenticateOpenStack()
@@ -209,5 +209,5 @@ func (collector *openStackCollector) Collect(ch chan<- prometheus.Metric) {
 	ch <- totalInstancesUsedMetric
 	ch <- totalRAMUsedMetric
 
-	level.Info(logger).Log("msg", "Finished metrics collection")
+	level.Info(logger).Log("message", "Finished metrics collection")
 }
