@@ -10,7 +10,7 @@ RUN curl -L -o /tmp/promu-${PROMU_VERSION}.linux-amd64.tar.gz https://github.com
 
 COPY . /src
 
-RUN /usr/bin/promu build && ls /src
+RUN /usr/bin/promu build
 
 FROM gcr.io/distroless/static
 
