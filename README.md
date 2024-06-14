@@ -38,6 +38,15 @@ For CloudFerro, following environment variables are needed:
     * OS_PASSWORD
     * OS_DOMAIN_ID
 
+### Running the exporter via Podman
+
+```bash
+podman build -t registry.example.com/openstack_exporter .
+podman run -p 9595:9595 <ALL_NECESSARY_ENV_VARS> registry.example.com/openstack_exporter:latest <args>
+
+curl http://localhost:9595/metrics
+```
+
 ## Exposed metrics
 
 | Metric                               | Description                                                         |
