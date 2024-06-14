@@ -11,6 +11,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/prometheus/common/promlog"
 	"github.com/prometheus/common/promlog/flag"
+	"github.com/prometheus/common/version"
 )
 
 var (
@@ -22,6 +23,7 @@ func main() {
 	kingpin.CommandLine.UsageWriter(os.Stdout)
 	flag.AddFlags(kingpin.CommandLine, &config)
 	kingpin.HelpFlag.Short('h')
+	kingpin.Version(version.Print("openstack_exporter"))
 	kingpin.Parse()
 
 	// Initialize the logger
@@ -36,9 +38,18 @@ func main() {
 	handler := promhttp.HandlerFor(promRegistry, promhttp.HandlerOpts{})
 
 	http.Handle("/metrics", handler)
-	level.Info(logger).Log("msg", "Starting exporter", "address", ":8080")
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte(`<html>
+			 <head><title>OpenStack Exporter</title></head>
+			 <body>
+			 <h1>OpenStack Exporter</h1>
+			 <p><a href='/metrics'>Metrics</a></p>
+			 </body>
+			 </html>`))
+	})
+	level.Info(logger).Log("msg", "Starting exporter", "address", ":9595")
 
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":9595", nil); err != nil {
 		level.Error(logger).Log("msg", "Failed to start HTTP server", "err", err)
 	}
 }
