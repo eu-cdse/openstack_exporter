@@ -84,7 +84,7 @@ func NewOpenStackCollector(volumeLimit float64) *openStackCollector {
 			nil, nil,
 		),
 		perStatusVolumeCount: prometheus.NewDesc("openstack_per_status_volume_count",
-			"Number of instances per status",
+			"Number of volumes per status",
 			[]string{"status"}, nil,
 		),
 		totalGigabytesUsed: prometheus.NewDesc("openstack_total_volume_gigabytes_used",
