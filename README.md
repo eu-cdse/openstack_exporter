@@ -9,9 +9,11 @@ usage: main [<flags>]
 
 Flags:
   -h, --[no-]help          Show context-sensitive help (also try --help-long and --help-man).
+      --port=9595          Port to serve the metrics on
       --volume.limit=-1    Max number of volumes when on OTC
       --log.level=info     Only log messages with the given severity or above. One of: [debug, info, warn, error]
       --log.format=logfmt  Output format of log messages. One of: [logfmt, json]
+      --[no-]version       Show application version.
 ```
 
 The `--volume.limit` is only used when running the exporter on OTC, because we currently have no way of getting the limits via the API.

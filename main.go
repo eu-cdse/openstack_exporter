@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 
@@ -16,6 +17,7 @@ import (
 
 var (
 	config      = promlog.Config{}
+	port        = kingpin.Flag("port", "Port to serve the metrics on").Default("9595").Int()
 	volumeLimit = kingpin.Flag("volume.limit", "Max number of volumes when on OTC").Default("-1").Float64()
 )
 
@@ -47,9 +49,9 @@ func main() {
 			 </body>
 			 </html>`))
 	})
-	level.Info(logger).Log("msg", "Starting exporter", "address", ":9595")
+	level.Info(logger).Log("msg", "Starting exporter", "address", fmt.Sprintf(":%d", *port))
 
-	if err := http.ListenAndServe(":9595", nil); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", *port), nil); err != nil {
 		level.Error(logger).Log("msg", "Failed to start HTTP server", "err", err)
 	}
 }
