@@ -119,7 +119,7 @@ func (c *openStackCollector) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (collector *openStackCollector) Collect(ch chan<- prometheus.Metric) {
-	level.Info(logger).Log("msg", "Starting metrics collection", "address", ":8080")
+	level.Info(logger).Log("msg", "Starting metrics collection", "address", ":9595")
 	startTime := time.Now()
 
 	defer func() {
@@ -209,5 +209,5 @@ func (collector *openStackCollector) Collect(ch chan<- prometheus.Metric) {
 	ch <- totalInstancesUsedMetric
 	ch <- totalRAMUsedMetric
 
-	level.Info(logger).Log("msg", "Finished metrics collection", "address", ":8080")
+	level.Info(logger).Log("msg", "Finished metrics collection", "address", ":9595")
 }
