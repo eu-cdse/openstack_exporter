@@ -25,9 +25,17 @@ type AbsoluteVolumeLimits struct {
 }
 
 func getVolumeLimits(providerClient *gophercloud.ProviderClient) *volumeLimits.Limits {
-	blockStorageClient, err := openstack.NewBlockStorageV2(providerClient, gophercloud.EndpointOpts{
-		Region: os.Getenv("OS_REGION_NAME"),
-	})
+	var blockStorageClient *gophercloud.ServiceClient
+	var err error
+	if os.Getenv("OS_REGION_NAME") == "WAW3-2" {
+		blockStorageClient, err = openstack.NewBlockStorageV3(providerClient, gophercloud.EndpointOpts{
+			Region: os.Getenv("OS_REGION_NAME"),
+		})
+	} else {
+		blockStorageClient, err = openstack.NewBlockStorageV2(providerClient, gophercloud.EndpointOpts{
+			Region: os.Getenv("OS_REGION_NAME"),
+		})
+	}
 
 	level.Debug(logger).Log("message", "Getting volume limits")
 
@@ -40,7 +48,7 @@ func getVolumeLimits(providerClient *gophercloud.ProviderClient) *volumeLimits.L
 }
 
 func getAllVolumes(providerClient *gophercloud.ProviderClient) []volumes.Volume {
-	blockStorageClient, err := openstack.NewBlockStorageV2(providerClient, gophercloud.EndpointOpts{
+	blockStorageClient, err := openstack.NewBlockStorageV3(providerClient, gophercloud.EndpointOpts{
 		Region: os.Getenv("OS_REGION_NAME"),
 	})
 	if err != nil {
