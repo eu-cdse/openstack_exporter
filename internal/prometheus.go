@@ -23,6 +23,7 @@ type openStackCollector struct {
 	totalRAMUsed           *prometheus.Desc
 	// Volume metrics
 	containerBytesUsed      *prometheus.Desc
+	containerObjectCount    *prometheus.Desc
 	maxTotalVolumeGigabytes *prometheus.Desc
 	maxTotalVolumes         *prometheus.Desc
 	perStatusVolumeCount    *prometheus.Desc
@@ -96,6 +97,10 @@ func NewOpenStackCollector(volumeLimit float64) *openStackCollector {
 			nil, nil,
 		),
 		volumeLimit: volumeLimit,
+		containerObjectCount: prometheus.NewDesc("openstack_container_object_count",
+			"The total of objects stored in the container",
+			[]string{"container"}, nil,
+		),
 	}
 }
 
@@ -116,6 +121,7 @@ func (c *openStackCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.maxTotalVolumes
 	ch <- c.totalGigabytesUsed
 	ch <- c.totalVolumesUsed
+	ch <- c.containerObjectCount
 }
 
 func (collector *openStackCollector) Collect(ch chan<- prometheus.Metric) {
@@ -198,7 +204,9 @@ func (collector *openStackCollector) Collect(ch chan<- prometheus.Metric) {
 	containers := getContainerList(providerClient)
 	for _, container := range containers {
 		containerBytesUsedMetric := prometheus.MustNewConstMetric(collector.containerBytesUsed, prometheus.GaugeValue, float64(container.Bytes), container.Name)
+		containerObjectCountMetric := prometheus.MustNewConstMetric(collector.containerObjectCount, prometheus.GaugeValue, float64(container.Count), container.Name)
 		ch <- containerBytesUsedMetric
+		ch <- containerObjectCountMetric
 	}
 
 	// Compute metrics

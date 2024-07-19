@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"os"
 	"strings"
+	"fmt"
 
 	"github.com/go-kit/log/level"
 	"github.com/gophercloud/gophercloud/v2"
@@ -17,6 +18,7 @@ import (
 
 type Container struct {
 	Bytes int64  `json:"bytes"`
+	Count int    `json:"count"`
 	Name  string `json:"name"`
 }
 
@@ -71,7 +73,7 @@ func getContainerList(providerClient *gophercloud.ProviderClient) []Container {
 			if err != nil {
 				level.Error(logger).Log("message", "Error parsing container list", "err", err)
 			}
-			containers = append(containers, Container{Bytes: bucketStorage.Size, Name: bucket.Name})
+			containers = append(containers, Container{Count: bucketStorage.ObjectNumber, Bytes: bucketStorage.Size, Name: bucket.Name})
 		}
 		return containers
 	} else {
