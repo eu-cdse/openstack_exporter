@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"os"
 	"strings"
-	"fmt"
 
 	"github.com/go-kit/log/level"
 	"github.com/gophercloud/gophercloud/v2"
