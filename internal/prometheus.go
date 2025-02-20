@@ -180,6 +180,7 @@ func (collector *openStackCollector) Collect(ch chan<- prometheus.Metric) {
 		volumeLimits, err := getVolumeLimits(providerClient)
 		if err != nil {
 			level.Error(logger).Log("message", "Failed to get volume limits", "err", err)
+			panic("Was not able to get limits if api has changed it requires changes to the exporter.")
 		} else {
 			maxTotalVolumeGigabytes := float64(volumeLimits.Absolute.MaxTotalVolumeGigabytes)
 			maxTotalVolumes := float64(volumeLimits.Absolute.MaxTotalVolumes)
