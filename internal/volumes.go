@@ -24,27 +24,30 @@ type AbsoluteVolumeLimits struct {
 	TotalGigabytesUsed      int `json:"totalGigabytesUsed"`
 }
 
-func getVolumeLimits(providerClient *gophercloud.ProviderClient) *volumeLimits.Limits {
+func getVolumeLimits(providerClient *gophercloud.ProviderClient) (*volumeLimits.Limits, error) {
 	var blockStorageClient *gophercloud.ServiceClient
 	var err error
-	if os.Getenv("OS_REGION_NAME") == "WAW3-2" {
-		blockStorageClient, err = openstack.NewBlockStorageV3(providerClient, gophercloud.EndpointOpts{
-			Region: os.Getenv("OS_REGION_NAME"),
-		})
-	} else {
+	if os.Getenv("OS_BLOCKSTORAGE_V") == "2" {
 		blockStorageClient, err = openstack.NewBlockStorageV2(providerClient, gophercloud.EndpointOpts{
 			Region: os.Getenv("OS_REGION_NAME"),
 		})
+	} else {
+		blockStorageClient, err = openstack.NewBlockStorageV3(providerClient, gophercloud.EndpointOpts{
+			Region: os.Getenv("OS_REGION_NAME"),
+		})
+	}
+	if err != nil {
+		return nil, err
 	}
 
 	level.Debug(logger).Log("message", "Getting volume limits")
 
-	volumeLimits, err := volumeLimits.Get(context.TODO(), blockStorageClient).Extract()
+	volumeLimits, err := volumeLimits.Get(context.Background(), blockStorageClient).Extract()
 	if err != nil {
-		level.Error(logger).Log("message", "Failed to retrieve limits", "err", err)
+		return nil, err
 	}
 
-	return volumeLimits
+	return volumeLimits, nil
 }
 
 func getAllVolumes(providerClient *gophercloud.ProviderClient) []volumes.Volume {

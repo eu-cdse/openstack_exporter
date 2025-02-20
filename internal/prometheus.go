@@ -177,21 +177,25 @@ func (collector *openStackCollector) Collect(ch chan<- prometheus.Metric) {
 
 	if !strings.Contains(os.Getenv("OS_AUTH_URL"), "otc") {
 
-		volumeLimits := getVolumeLimits(providerClient)
-		maxTotalVolumeGigabytes := float64(volumeLimits.Absolute.MaxTotalVolumeGigabytes)
-		maxTotalVolumes := float64(volumeLimits.Absolute.MaxTotalVolumes)
-		totalGigabytesUsed := float64(volumeLimits.Absolute.TotalGigabytesUsed)
-		totalVolumesUsed := float64(volumeLimits.Absolute.TotalVolumesUsed)
-
-		maxTotalVolumeGigabytesMetric := prometheus.MustNewConstMetric(collector.maxTotalVolumeGigabytes, prometheus.GaugeValue, maxTotalVolumeGigabytes)
-		maxTotalVolumesMetric := prometheus.MustNewConstMetric(collector.maxTotalVolumes, prometheus.GaugeValue, maxTotalVolumes)
-		totalGigabytesUsedMetric := prometheus.MustNewConstMetric(collector.totalGigabytesUsed, prometheus.GaugeValue, totalGigabytesUsed)
-		totalVolumesUsedMetric := prometheus.MustNewConstMetric(collector.totalVolumesUsed, prometheus.GaugeValue, totalVolumesUsed)
-		// Volume metrics
-		ch <- maxTotalVolumeGigabytesMetric
-		ch <- maxTotalVolumesMetric
-		ch <- totalGigabytesUsedMetric
-		ch <- totalVolumesUsedMetric
+		volumeLimits, err := getVolumeLimits(providerClient)
+		if err != nil {
+			level.Error(logger).Log("message", "Failed to get volume limits", "err", err)
+		} else {
+			maxTotalVolumeGigabytes := float64(volumeLimits.Absolute.MaxTotalVolumeGigabytes)
+			maxTotalVolumes := float64(volumeLimits.Absolute.MaxTotalVolumes)
+			totalGigabytesUsed := float64(volumeLimits.Absolute.TotalGigabytesUsed)
+			totalVolumesUsed := float64(volumeLimits.Absolute.TotalVolumesUsed)
+	
+			maxTotalVolumeGigabytesMetric := prometheus.MustNewConstMetric(collector.maxTotalVolumeGigabytes, prometheus.GaugeValue, maxTotalVolumeGigabytes)
+			maxTotalVolumesMetric := prometheus.MustNewConstMetric(collector.maxTotalVolumes, prometheus.GaugeValue, maxTotalVolumes)
+			totalGigabytesUsedMetric := prometheus.MustNewConstMetric(collector.totalGigabytesUsed, prometheus.GaugeValue, totalGigabytesUsed)
+			totalVolumesUsedMetric := prometheus.MustNewConstMetric(collector.totalVolumesUsed, prometheus.GaugeValue, totalVolumesUsed)
+			// Volume metrics
+			ch <- maxTotalVolumeGigabytesMetric
+			ch <- maxTotalVolumesMetric
+			ch <- totalGigabytesUsedMetric
+			ch <- totalVolumesUsedMetric
+		}
 	} else {
 		totalVolumesUsed := float64(len(volumeList))
 		maxTotalVolumes := float64(collector.volumeLimit)
